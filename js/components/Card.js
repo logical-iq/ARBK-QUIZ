@@ -50,6 +50,14 @@ export class QuizCard {
 
         console.log(`Starting quiz with ${quizData.questions.length} questions`);
         
+        // Get quiz interface and card elements
+        const quizInterface = document.getElementById('quizInterface');
+        const quizCards = document.getElementById('quizCards');
+        
+        // Hide cards and show quiz interface
+        quizCards.classList.add('hidden');
+        quizInterface.classList.remove('hidden');
+        
         this.questions = quizData.questions;
         this.currentQuestionIndex = 0;
         this.score = 0;
@@ -101,11 +109,16 @@ export class QuizCard {
                     <div id="feedback" class="hidden mt-4 p-4 rounded-lg"></div>
 
                     <div class="flex justify-between items-center pt-4">
-                        ${index > 0 ? `
-                            <button type="button" class="prev-btn px-6 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors">
-                                ← Previous
+                        <div class="space-x-2">
+                            ${index > 0 ? `
+                                <button type="button" class="prev-btn px-6 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors">
+                                    ← Previous
+                                </button>
+                            ` : ''}
+                            <button type="button" class="stop-quiz-btn px-6 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors">
+                                Stop Quiz
                             </button>
-                        ` : '<div></div>'}
+                        </div>
                         <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
                             ${index === this.questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
                         </button>
@@ -120,6 +133,7 @@ export class QuizCard {
     setupQuestionEventListeners(container, question) {
         const form = container.querySelector('#questionForm');
         const prevBtn = container.querySelector('.prev-btn');
+        const stopBtn = container.querySelector('.stop-quiz-btn');
         const feedback = container.querySelector('#feedback');
 
         if (prevBtn) {
@@ -128,6 +142,13 @@ export class QuizCard {
                 this.showQuestion(this.currentQuestionIndex);
             });
         }
+
+        // Add stop quiz functionality
+        stopBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to stop this quiz? Your progress will be lost.')) {
+                this.stopQuiz();
+            }
+        });
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -186,16 +207,45 @@ export class QuizCard {
 
             if (isCorrect) this.score++;
 
-            // Wait for 1.5 seconds before moving to next question
-            setTimeout(() => {
+            // Add skip button to proceed immediately
+            const skipWaitingBtn = document.createElement('button');
+            skipWaitingBtn.className = 'mt-4 px-4 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors';
+            skipWaitingBtn.textContent = 'Continue →';
+            skipWaitingBtn.addEventListener('click', () => {
                 if (this.currentQuestionIndex < this.questions.length - 1) {
                     this.currentQuestionIndex++;
                     this.showQuestion(this.currentQuestionIndex);
                 } else {
                     this.showFinalScore();
                 }
-            }, 6500);
+                clearTimeout(this.nextQuestionTimer);
+            });
+            feedback.appendChild(skipWaitingBtn);
+
+            // Wait for 3 seconds before moving to next question (reduced from 6)
+            this.nextQuestionTimer = setTimeout(() => {
+                if (this.currentQuestionIndex < this.questions.length - 1) {
+                    this.currentQuestionIndex++;
+                    this.showQuestion(this.currentQuestionIndex);
+                } else {
+                    this.showFinalScore();
+                }
+            }, 3000);
         });
+    }
+
+    // Add method to stop quiz
+    stopQuiz() {
+        const quizInterface = document.getElementById('quizInterface');
+        const quizCards = document.getElementById('quizCards');
+        
+        quizInterface.classList.add('hidden');
+        quizCards.classList.remove('hidden');
+        
+        // Clear any pending timers
+        if (this.nextQuestionTimer) {
+            clearTimeout(this.nextQuestionTimer);
+        }
     }
 
     checkAnswer(selectedAnswers, question) {

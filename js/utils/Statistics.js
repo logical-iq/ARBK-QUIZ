@@ -8,7 +8,7 @@ export class Statistics {
         };
     }
 
-    static saveQuizAttempt(quizData, score, totalQuestions) {
+    static saveQuizAttempt(quizData, score, totalQuestions, wrongAnswers = []) {
         const stats = this.getStats();
         const timestamp = new Date().toISOString();
         const percentage = Math.round((score / totalQuestions) * 100);
@@ -19,7 +19,8 @@ export class Statistics {
             chapterTitle: quizData.title,
             score,
             totalQuestions,
-            percentage
+            percentage,
+            wrongQuestions: wrongAnswers
         };
 
         // Update overall stats

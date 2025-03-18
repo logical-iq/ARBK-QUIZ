@@ -5,9 +5,9 @@ import { Statistics } from './utils/Statistics.js';
 class App {
     constructor() {
         this.allQuestions = [];
+        this.compileAllQuestions();
         this.initializeEventListeners();
         this.loadQuizzes();
-        this.compileAllQuestions();
     }
 
     initializeEventListeners() {
@@ -43,6 +43,7 @@ class App {
         // Initialize quiz with all questions
         const card = new QuizCard();
         const combinedQuiz = {
+            id: "all",
             title: "Complete Quiz",
             description: "All chapters combined",
             questions: this.allQuestions,
@@ -50,6 +51,80 @@ class App {
         };
         
         card.startQuiz(combinedQuiz);
+    }
+
+    // Start a random subset of questions
+    startRandomQuestions() {
+        // Get a random selection of 10 questions
+        const randomQuestions = [...this.allQuestions]
+            .sort(() => 0.5 - Math.random())
+            .slice(0, 10);
+
+        const quizInterface = document.getElementById('quizInterface');
+        const quizCards = document.getElementById('quizCards');
+        
+        // Hide cards and show quiz interface
+        quizCards.classList.add('hidden');
+        quizInterface.classList.remove('hidden');
+
+        // Initialize quiz with random questions
+        const card = new QuizCard();
+        const randomQuiz = {
+            id: "random",
+            title: "Random Quiz",
+            description: "Random selection of questions",
+            questions: randomQuestions,
+            hints: ["A random selection of questions from all chapters"]
+        };
+        
+        card.startQuiz(randomQuiz);
+    }
+
+    // Start a quiz with incorrectly answered questions from previous attempts
+    startMistakesQuiz() {
+        const stats = Statistics.getStats();
+        const mistakeQuestions = [];
+        
+        // Collect questions that were answered incorrectly in the past
+        if (stats.history && stats.history.length > 0) {
+            stats.history.forEach(attempt => {
+                if (attempt.wrongQuestions && attempt.wrongQuestions.length > 0) {
+                    attempt.wrongQuestions.forEach(wrongQ => {
+                        // Find the question in allQuestions
+                        const fullQuestion = this.allQuestions.find(q => 
+                            q.id === wrongQ.id && q.chapterId === wrongQ.chapterId
+                        );
+                        if (fullQuestion && !mistakeQuestions.some(mq => mq.id === fullQuestion.id)) {
+                            mistakeQuestions.push(fullQuestion);
+                        }
+                    });
+                }
+            });
+        }
+        
+        if (mistakeQuestions.length === 0) {
+            alert("No previously incorrectly answered questions found. Try taking some quizzes first!");
+            return;
+        }
+
+        const quizInterface = document.getElementById('quizInterface');
+        const quizCards = document.getElementById('quizCards');
+        
+        // Hide cards and show quiz interface
+        quizCards.classList.add('hidden');
+        quizInterface.classList.remove('hidden');
+
+        // Initialize quiz with mistake questions
+        const card = new QuizCard();
+        const mistakesQuiz = {
+            id: "mistakes",
+            title: "Review Mistakes",
+            description: "Questions you previously answered incorrectly",
+            questions: mistakeQuestions,
+            hints: ["Focus on these questions to improve your score"]
+        };
+        
+        card.startQuiz(mistakesQuiz);
     }
 
     randomizeQuizzes() {
@@ -73,13 +148,21 @@ class App {
         
         switch(mode) {
             case 'all':
+                startAllBtn.textContent = "Start All Questions";
                 startAllBtn.classList.remove('hidden');
                 randomizeBtn.classList.add('hidden');
                 break;
             case 'random':
-                startAllBtn.classList.add('hidden');
-                randomizeBtn.classList.remove('hidden');
-                this.randomizeQuizzes();
+                startAllBtn.textContent = "Start Random Quiz";
+                startAllBtn.classList.remove('hidden');
+                randomizeBtn.classList.add('hidden');
+                startAllBtn.onclick = () => this.startRandomQuestions();
+                break;
+            case 'mistakes':
+                startAllBtn.textContent = "Review Mistakes";
+                startAllBtn.classList.remove('hidden');
+                randomizeBtn.classList.add('hidden');
+                startAllBtn.onclick = () => this.startMistakesQuiz();
                 break;
             case 'chapter':
                 startAllBtn.classList.add('hidden');
