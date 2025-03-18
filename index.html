@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz Flashcards</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="css/style.css" rel="stylesheet" />
+  </head>
+  <body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center space-x-4">
+            <h1
+              class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600"
+            >
+              QuizMaster
+            </h1>
+          </div>
+          <div class="flex items-center space-x-4">
+            <select
+              id="quizMode"
+              class="form-select rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            >
+              <option value="chapter">Chapter Mode</option>
+              <option value="all">All Questions</option>
+              <option value="random">Random Mix</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+      <!-- Quiz Section -->
+      <div id="quizSection" class="space-y-8">
+        <div
+          class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0"
+        >
+          <div class="flex items-center space-x-4">
+            <h2 class="text-2xl font-bold text-gray-800">Available Quizzes</h2>
+            <span
+              id="questionCount"
+              class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"
+            ></span>
+          </div>
+          <div class="flex space-x-4">
+            <button
+              id="startAllBtn"
+              class="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 transition-colors duration-200 shadow-sm"
+            >
+              Start All Questions
+            </button>
+            <button
+              id="randomizeBtn"
+              class="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition-colors duration-200 shadow-sm"
+            >
+              Randomize
+            </button>
+          </div>
+        </div>
+
+        <!-- Quiz Cards Container -->
+        <div
+          id="quizCards"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          <!-- Quiz cards will be inserted here dynamically -->
+        </div>
+
+        <!-- Quiz Interface -->
+        <div id="quizInterface" class="hidden">
+          <div class="bg-white rounded-lg shadow-lg p-8 max-w-4xl mx-auto">
+            <div id="questionDisplay" class="space-y-6">
+              <!-- Question content will be inserted here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Quiz Result -->
+        <div
+          id="quizResult"
+          class="hidden bg-white rounded-lg shadow-lg p-8 max-w-4xl mx-auto"
+        >
+          <!-- Quiz results will be shown here -->
+        </div>
+      </div>
+    </main>
+
+    <!-- Scripts -->
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>

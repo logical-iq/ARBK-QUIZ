@@ -1,0 +1,11 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "username": "demo_user",
+      "password": "hashed_password",
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "quizResults": []
+    }
+  ]
+}
