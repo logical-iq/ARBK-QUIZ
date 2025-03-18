@@ -194,7 +194,7 @@ export class QuizCard {
                 } else {
                     this.showFinalScore();
                 }
-            }, 1500);
+            }, 6500);
         });
     }
 
